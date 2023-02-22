@@ -3,6 +3,7 @@ import { useAppDispatch } from "@/app/hooks";
 import aubayIcon from '../assets/aubayCopy.png'
 import { Container, Form, Login, Header } from "@/components/styles/Container.styled";
 import { useFormik } from "formik";
+import Api, { errorInterceptor, responseInterceptor } from "@/common/axios";
 
 interface IAuth {
     username: string,
@@ -11,17 +12,18 @@ interface IAuth {
 
 const Auth = () => {
     const dispatch = useAppDispatch();
-    const initialValues: IAuth = { username: '', password: ''}
-    // const handleSubmit = (e: { preventDefault: () => void; }) => {
-    //     e.preventDefault();
-    //     dispatch(authActions.login())
-    // }
+    const initialValues: IAuth = { username: 'kminchelle', password: '0lelplR'}
 
     const formik = useFormik({
         initialValues: initialValues,
         onSubmit: values => {
-            console.log(values)
-            dispatch(authActions.login())
+            Api.post('/auth/login', {
+                username: values.username,
+                password: values.password
+            }).then(res => {
+                responseInterceptor(res)
+                dispatch(authActions.login())
+            }).catch(error => errorInterceptor(error))
         }
     })
     return (
